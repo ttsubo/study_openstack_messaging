@@ -1,35 +1,35 @@
 import os
 import logging
 import eventlet
-import oslo.messaging
+import oslo_messaging
 import datetime
-from oslo.config import cfg
+from oslo_config import cfg
 eventlet.monkey_patch()
 
 CONF = cfg.CONF
 CONF(default_config_files=['conf/heat.conf'])
 
 
-oslo.messaging.set_transport_defaults('heat')
-TRANSPORT = oslo.messaging.get_transport(CONF)
+oslo_messaging.set_transport_defaults('heat')
+TRANSPORT = oslo_messaging.get_transport(CONF)
 ENGINE_TOPIC = 'engine'
 
 
 def get_rpc_server(target, endpoint):
-    return oslo.messaging.get_rpc_server(TRANSPORT, target, [endpoint],
+    return oslo_messaging.get_rpc_server(TRANSPORT, target, [endpoint],
                                          executor='eventlet')
 
 
 class EngineService(object):
 
-    RPC_API_VERSION = '1.1'
+    RPC_API_VERSION = '1.26'
 
     def __init__(self, host, topic):
         self.host = host
         self.topic = topic
 
     def start(self):
-        target = oslo.messaging.Target(
+        target = oslo_messaging.Target(
             version=self.RPC_API_VERSION, server=self.host,
             topic=self.topic)
         server = get_rpc_server(target, self)

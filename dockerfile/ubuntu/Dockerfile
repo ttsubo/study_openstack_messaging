@@ -14,9 +14,9 @@ ADD https://bootstrap.pypa.io/get-pip.py /
 RUN python get-pip.py
 
 # Install oslo_messaging
-RUN pip install oslo_messaging==1.4.2
+RUN pip install oslo_messaging==4.6.1
 
 # Install eventlet
-RUN pip install eventlet==0.15.2
+RUN pip install eventlet==0.18.4
 
 WORKDIR /tools
