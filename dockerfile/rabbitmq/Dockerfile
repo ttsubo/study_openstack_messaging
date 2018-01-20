@@ -1,4 +1,4 @@
-FROM rabbitmq:3.6.5-management
+FROM rabbitmq:3.7.2-management
 MAINTAINER Toshiki Tsuboi <t.tsubo2000@gmail.com>
 
 COPY start-rabbitmq.sh /usr/local/bin/

@@ -32,12 +32,17 @@ class EngineClient(object):
     def make_msg(method, **kwargs):
         return method, kwargs
 
-    def call(self, ctxt, msg, version=None):
+    def call(self, ctxt, msg, version=None, timeout=None):
         method, kwargs = msg
+
         if version is not None:
             client = self._client.prepare(version=version)
         else:
             client = self._client
+
+        if timeout is not None:
+            client = client.prepare(timeout=timeout)
+
         return client.call(ctxt, method, **kwargs)
 
     def health_check(self, ctxt, seqid, host, content):

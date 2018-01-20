@@ -2,6 +2,7 @@ import os
 import logging
 import eventlet
 import oslo_messaging
+from oslo_messaging.rpc import dispatcher
 import datetime
 from oslo_config import cfg
 eventlet.monkey_patch()
@@ -16,13 +17,15 @@ ENGINE_TOPIC = 'engine'
 
 
 def get_rpc_server(target, endpoint):
+    access_policy = dispatcher.DefaultRPCAccessPolicy
     return oslo_messaging.get_rpc_server(TRANSPORT, target, [endpoint],
-                                         executor='eventlet')
+                                         executor='eventlet',
+                                         access_policy=access_policy)
 
 
 class EngineService(object):
 
-    RPC_API_VERSION = '1.26'
+    RPC_API_VERSION = '1.35'
 
     def __init__(self, host, topic):
         self.host = host
