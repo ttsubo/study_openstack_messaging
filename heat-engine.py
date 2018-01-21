@@ -10,9 +10,9 @@ CONF = cfg.CONF
 CONF(default_config_files=['conf/heat.conf'])
 
 
-oslo.messaging.set_transport_defaults('heat')
+oslo.messaging.set_transport_defaults('test')
 TRANSPORT = oslo.messaging.get_transport(CONF)
-ENGINE_TOPIC = 'engine'
+ENGINE_TOPIC = 'test'
 
 
 def get_rpc_server(target, endpoint):
