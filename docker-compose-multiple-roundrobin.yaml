@@ -37,7 +37,7 @@ services:
       - 15674:15672
 
   haproxy-rabbitmq:
-    image: ttsubo/haproxy-rabbitmq:case
+    image: ttsubo/haproxy:latest
     command: /bin/sh -c "service rsyslog start; haproxy -db -f /usr/local/etc/haproxy/haproxy.cfg"
     depends_on:
     - rabbit-1-server
