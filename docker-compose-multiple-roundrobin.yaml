@@ -1,7 +1,7 @@
 version: '2'
 services:
   rabbit-1-server:
-    image: ttsubo/rabbitmq:latest
+    image: ttsubo/rabbitmq:juno
     command: /bin/sh -c "/usr/local/bin/start-rabbitmq.sh"
     container_name: rabbit-1-server
     hostname: rabbit-1-server
@@ -9,9 +9,12 @@ services:
       - ERLANG_COOKIE=abcdefg
     ports:
       - 15672:15672
+    volumes:
+    - ./log/rabbit-1-server:/var/log/rabbitmq
+    privileged: true
 
   rabbit-2-server:
-    image: ttsubo/rabbitmq:latest
+    image: ttsubo/rabbitmq:juno
     command: /bin/sh -c "sleep 5; /usr/local/bin/start-rabbitmq.sh"
     container_name: rabbit-2-server
     hostname: rabbit-2-server
@@ -22,9 +25,12 @@ services:
       - CLUSTER_WITH=rabbit-1-server
     ports:
       - 15673:15672
+    volumes:
+    - ./log/rabbit-2-2server:/var/log/rabbitmq
+    privileged: true
 
   rabbit-3-server:
-    image: ttsubo/rabbitmq:latest
+    image: ttsubo/rabbitmq:juno
     command: /bin/sh -c "sleep 10; /usr/local/bin/start-rabbitmq.sh"
     container_name: rabbit-3-server
     hostname: rabbit-3-server
@@ -35,9 +41,12 @@ services:
       - CLUSTER_WITH=rabbit-1-server
     ports:
       - 15674:15672
+    volumes:
+    - ./log/rabbit-3-server:/var/log/rabbitmq
+    privileged: true
 
   haproxy-rabbitmq:
-    image: ttsubo/haproxy:latest
+    image: ttsubo/haproxy:juno
     command: /bin/sh -c "service rsyslog start; haproxy -db -f /usr/local/etc/haproxy/haproxy.cfg"
     depends_on:
     - rabbit-1-server
@@ -46,12 +55,12 @@ services:
     ports:
     - "5672:5672"
     volumes:
-    - ./log:/var/log
+    - ./log/haproxy-rabbitmq:/var/log
     container_name: haproxy-rabbitmq
     hostname: haproxy-rabbitmq
 
   heat-1-engine:
-    image: ttsubo/ubuntu:latest
+    image: ttsubo/ubuntu:juno
     command: /bin/sh -c "sleep 20; python heat-engine.py --config-file conf/heat.conf > /log/heat-1-engine.log 2>& 1"
     volumes:
     - ./log:/log
@@ -59,7 +68,7 @@ services:
     hostname: heat-1-engine
 
   heat-2-engine:
-    image: ttsubo/ubuntu:latest
+    image: ttsubo/ubuntu:juno
     command: /bin/sh -c "sleep 25; python heat-engine.py --config-file conf/heat.conf > /log/heat-2-engine.log 2>& 1"
     volumes:
     - ./log:/log
@@ -67,7 +76,7 @@ services:
     hostname: heat-2-engine
 
   heat-3-engine:
-    image: ttsubo/ubuntu:latest
+    image: ttsubo/ubuntu:juno
     command: /bin/sh -c "sleep 30; python heat-engine.py --config-file conf/heat.conf > /log/heat-3-engine.log 2>& 1"
     volumes:
     - ./log:/log
@@ -75,7 +84,7 @@ services:
     hostname: heat-3-engine
 
   heat-1-api:
-    image: ttsubo/ubuntu:latest
+    image: ttsubo/ubuntu:juno
     command: /bin/sh -c "sleep 60; python heat-api.py --config-file conf/heat.conf > /log/heat-1-api.log 2>& 1"
     volumes:
     - ./log:/log
