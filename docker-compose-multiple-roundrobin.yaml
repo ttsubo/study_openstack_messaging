@@ -1,7 +1,7 @@
 version: '2'
 services:
   rabbit-1-server:
-    image: ttsubo/rabbitmq:latest
+    image: ttsubo/rabbitmq:mitaka
     command: /bin/sh -c "/usr/local/bin/start-rabbitmq.sh"
     container_name: rabbit-1-server
     hostname: rabbit-1-server
@@ -11,7 +11,7 @@ services:
       - 15672:15672
 
   rabbit-2-server:
-    image: ttsubo/rabbitmq:latest
+    image: ttsubo/rabbitmq:mitaka
     command: /bin/sh -c "sleep 5; /usr/local/bin/start-rabbitmq.sh"
     container_name: rabbit-2-server
     hostname: rabbit-2-server
@@ -24,7 +24,7 @@ services:
       - 15673:15672
 
   rabbit-3-server:
-    image: ttsubo/rabbitmq:latest
+    image: ttsubo/rabbitmq:mitaka
     command: /bin/sh -c "sleep 10; /usr/local/bin/start-rabbitmq.sh"
     container_name: rabbit-3-server
     hostname: rabbit-3-server
@@ -37,7 +37,7 @@ services:
       - 15674:15672
 
   haproxy-rabbitmq:
-    image: ttsubo/haproxy:latest
+    image: ttsubo/haproxy:mitaka
     command: /bin/sh -c "service rsyslog start; haproxy -db -f /usr/local/etc/haproxy/haproxy.cfg"
     depends_on:
     - rabbit-1-server
@@ -51,7 +51,7 @@ services:
     hostname: haproxy-rabbitmq
 
   heat-1-engine:
-    image: ttsubo/ubuntu:latest
+    image: ttsubo/ubuntu:mitaka
     command: /bin/sh -c "sleep 20; python heat-engine.py --config-file conf/heat.conf > /log/heat-1-engine.log 2>& 1"
     volumes:
     - ./log:/log
@@ -59,7 +59,7 @@ services:
     hostname: heat-1-engine
 
   heat-2-engine:
-    image: ttsubo/ubuntu:latest
+    image: ttsubo/ubuntu:mitaka
     command: /bin/sh -c "sleep 25; python heat-engine.py --config-file conf/heat.conf > /log/heat-2-engine.log 2>& 1"
     volumes:
     - ./log:/log
@@ -67,7 +67,7 @@ services:
     hostname: heat-2-engine
 
   heat-3-engine:
-    image: ttsubo/ubuntu:latest
+    image: ttsubo/ubuntu:mitaka
     command: /bin/sh -c "sleep 30; python heat-engine.py --config-file conf/heat.conf > /log/heat-3-engine.log 2>& 1"
     volumes:
     - ./log:/log
@@ -75,7 +75,7 @@ services:
     hostname: heat-3-engine
 
   heat-1-api:
-    image: ttsubo/ubuntu:latest
+    image: ttsubo/ubuntu:mitaka
     command: /bin/sh -c "sleep 60; python heat-api.py --config-file conf/heat.conf > /log/heat-1-api.log 2>& 1"
     volumes:
     - ./log:/log
