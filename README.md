@@ -30,8 +30,6 @@ root@rabbit-1-server:/# curl localhost:15672/cli/rabbitmqadmin > rabbitmqadmin
 
 root@rabbit-1-server:/# chmod 755 rabbitmqadmin
 
-root@rabbit-1-server:/# ./rabbitmqctl list_queues name messages messages_unacknowledged consumers auto_delete
-bash: ./rabbitmqctl: No such file or directory
 root@rabbit-1-server:/# ./rabbitmqadmin list queues name messages node slave_nodes
 +------------------------------------------------+----------+------------------------+------------------------------------------------------+
 |                      name                      | messages |          node          |                     slave_nodes                      |
