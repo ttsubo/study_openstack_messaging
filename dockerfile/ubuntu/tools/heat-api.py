@@ -1,22 +1,22 @@
 import os
 import time
 import logging
-import oslo.messaging
-from oslo.config import cfg
+import oslo_messaging
+from oslo_config import cfg
 
 CONF = cfg.CONF
 CONF(default_config_files=['conf/heat.conf'])
 
 
 
-oslo.messaging.set_transport_defaults('heat')
-TRANSPORT = oslo.messaging.get_transport(CONF)
+oslo_messaging.set_transport_defaults('heat')
+TRANSPORT = oslo_messaging.get_transport(CONF)
 ENGINE_TOPIC = 'engine'
 
 
 def get_rpc_client(**kwargs):
-    target = oslo.messaging.Target(**kwargs)
-    return oslo.messaging.RPCClient(TRANSPORT, target)
+    target = oslo_messaging.Target(**kwargs)
+    return oslo_messaging.RPCClient(TRANSPORT, target)
 
 
 class EngineClient(object):
