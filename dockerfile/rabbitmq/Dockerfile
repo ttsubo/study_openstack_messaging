@@ -1,4 +1,4 @@
-FROM rabbitmq:3.6.5-management
+FROM rabbitmq:3.5-management
 MAINTAINER Toshiki Tsuboi <t.tsubo2000@gmail.com>
 
 RUN apt-get update \
