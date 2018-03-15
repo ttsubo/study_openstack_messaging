@@ -5,7 +5,7 @@ import oslo.messaging
 from oslo.config import cfg
 
 CONF = cfg.CONF
-CONF(default_config_files=['conf/heat.conf'])
+CONF(default_config_files=['conf/heat-1.conf'])
 
 
 
@@ -66,6 +66,6 @@ if __name__ == '__main__':
     myhost = os.uname()[1]
     client = StackController()
     while True:
+        time.sleep(30)
         sequence_id += 1
         client.health_check(sequence_id, myhost, "How are you?")
-        time.sleep(1)

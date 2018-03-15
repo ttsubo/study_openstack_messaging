@@ -7,18 +7,11 @@
 ```
 $ docker build -t ttsubo/ubuntu:juno dockerfile/ubuntu/.
 $ docker build -t ttsubo/rabbitmq:juno dockerfile/rabbitmq/.
-$ docker build -t ttsubo/haproxy:juno dockerfile/haproxy/.
+$ docker build -t ttsubo/haproxy-1:juno dockerfile/haproxy-1/.
+$ docker build -t ttsubo/haproxy-2:juno dockerfile/haproxy-2/.
 ```
 
 ## How to Run
-```
-$ docker-compose -f docker-compose-single.yaml up -d
-```
-or
-```
-$ docker-compose -f docker-compose-multiple.yaml up -d
-```
-or
 ```
 $ docker-compose -f docker-compose-multiple-roundrobin.yaml up -d
 ```

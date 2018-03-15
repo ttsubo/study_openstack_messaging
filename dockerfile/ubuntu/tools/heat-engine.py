@@ -1,5 +1,6 @@
 import os
 import logging
+import time
 import eventlet
 import oslo.messaging
 import datetime
@@ -7,7 +8,7 @@ from oslo.config import cfg
 eventlet.monkey_patch()
 
 CONF = cfg.CONF
-CONF(default_config_files=['conf/heat.conf'])
+CONF(default_config_files=['conf/heat-2.conf'])
 
 
 oslo.messaging.set_transport_defaults('heat')
@@ -41,6 +42,7 @@ class EngineService(object):
                     .format(seqid, host, req))
         myhost = os.uname()[1]
         response = "I'm fine!"
+        time.sleep(30)
         return seqid, myhost, response
 
 
