@@ -1,4 +1,8 @@
-## Docker Image Build
+## Envirornment
+* RabbitMQ : 3.2.4
+* oslo.messaging: 1.4.2
+
+## How to build Docker Image
 
 ```
 $ docker build -t ttsubo/ubuntu:juno dockerfile/ubuntu/.
@@ -6,7 +10,7 @@ $ docker build -t ttsubo/rabbitmq:juno dockerfile/rabbitmq/.
 $ docker build -t ttsubo/haproxy:juno dockerfile/haproxy/.
 ```
 
-## Run
+## How to Run
 ```
 $ docker-compose -f docker-compose-single.yaml up -d
 ```
@@ -31,27 +35,28 @@ root@rabbit-1-server:/# curl localhost:15672/cli/rabbitmqadmin > rabbitmqadmin
 root@rabbit-1-server:/# chmod 755 rabbitmqadmin
 
 root@rabbit-1-server:/# ./rabbitmqadmin list queues name messages node slave_nodes
-+------------------------------------------------+----------+------------------------+------------------------------------------------------+
-|                      name                      | messages |          node          |                     slave_nodes                      |
-+------------------------------------------------+----------+------------------------+------------------------------------------------------+
-| engine                                         | 0        | rabbit@rabbit-1-server | ["rabbit@rabbit-3-server", "rabbit@rabbit-2-server"] |
-| engine.heat-engine                             | 0        | rabbit@rabbit-1-server | ["rabbit@rabbit-3-server", "rabbit@rabbit-2-server"] |
-| engine_fanout_b615c7a0257e44a394170e755ad81d9b | 0        | rabbit@rabbit-2-server | ["rabbit@rabbit-3-server", "rabbit@rabbit-1-server"] |
-| engine_fanout_be317fc5cd7440deb12d30a3fa00d3a5 | 0        | rabbit@rabbit-1-server | ["rabbit@rabbit-3-server", "rabbit@rabbit-2-server"] |
-| engine_fanout_e5ac8ef4c02b48f4a6e8297ae99b713d | 0        | rabbit@rabbit-1-server | ["rabbit@rabbit-3-server", "rabbit@rabbit-2-server"] |
-| reply_86216dccef824f3fa81cc47335aa15bc         | 0        | rabbit@rabbit-3-server | ["rabbit@rabbit-1-server", "rabbit@rabbit-2-server"] |
-+------------------------------------------------+----------+------------------------+------------------------------------------------------+
++------------------------------------------------+----------+------------------------+-----------------------------------------------+
+|                      name                      | messages |          node          |                  slave_nodes                  |
++------------------------------------------------+----------+------------------------+-----------------------------------------------+
+| engine                                         | 0        | rabbit@rabbit-1-server | rabbit@rabbit-3-server rabbit@rabbit-2-server |
+| engine.heat-engine                             | 0        | rabbit@rabbit-1-server | rabbit@rabbit-3-server rabbit@rabbit-2-server |
+| engine_fanout_2b2414c23f814e77a5e5a7961d48a63e | 0        | rabbit@rabbit-1-server | rabbit@rabbit-3-server rabbit@rabbit-2-server |
+| engine_fanout_712588666789458596a8dc2ece2df0ec | 0        | rabbit@rabbit-1-server | rabbit@rabbit-3-server rabbit@rabbit-2-server |
+| engine_fanout_c044236f81be4b77bb401ca7941a13b2 | 0        | rabbit@rabbit-2-server | rabbit@rabbit-3-server rabbit@rabbit-1-server |
+| reply_80682df99e7d4fbe849da1131d01bca7         | 0        | rabbit@rabbit-3-server | rabbit@rabbit-1-server rabbit@rabbit-2-server |
++------------------------------------------------+----------+------------------------+-----------------------------------------------+
 ```
 ## Checking current list_queues in rabbitmq
 ```
-root@rabbit-1-server:/# /usr/lib/rabbitmq/bin/rabbitmqctl list_queues name messages messages_unacknowledged consumers auto_delete
+root@rabbit-1-server:/# rabbitmqctl list_queues name messages messages_unacknowledged consumers auto_delete
 Listing queues ...
-reply_86216dccef824f3fa81cc47335aa15bc	0	0	1	true
-engine.heat-engine	0	0	3	false
-engine_fanout_b615c7a0257e44a394170e755ad81d9b	0	0	1	true
-engine_fanout_e5ac8ef4c02b48f4a6e8297ae99b713d	0	0	1	true
-engine_fanout_be317fc5cd7440deb12d30a3fa00d3a5	0	0	1	true
 engine	0	0	3	false
+engine.heat-engine	0	0	3	false
+engine_fanout_2b2414c23f814e77a5e5a7961d48a63e	0	0	1	true
+engine_fanout_712588666789458596a8dc2ece2df0ec	0	0	1	true
+engine_fanout_c044236f81be4b77bb401ca7941a13b2	0	0	1	true
+reply_80682df99e7d4fbe849da1131d01bca7	0	0	1	true
+...done.
 ```
 ## Checking heat-api/heat-engine results via rabbitmq
 ```
