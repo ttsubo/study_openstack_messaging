@@ -55,6 +55,4 @@ reply_80682df99e7d4fbe849da1131d01bca7	0	0	1	true
 ```
 $ tail -f log/heat-1-api.log
 $ tail -f log/heat-1-engine.log
-$ tail -f log/heat-2-engine.log
-$ tail -f log/heat-3-engine.log
 ```
