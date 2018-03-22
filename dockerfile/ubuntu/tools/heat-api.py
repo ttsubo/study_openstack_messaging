@@ -59,7 +59,7 @@ class StackController(object):
 
 
 if __name__ == '__main__':
-    logging.basicConfig(format='%(asctime)s:%(levelname)s:%(name)s:%(message)s',
+    logging.basicConfig(format='%(asctime)s:%(levelname)s:%(filename)s:%(lineno)s:%(funcName)s:%(message)s',
                         level=logging.DEBUG)
 
     sequence_id = 0

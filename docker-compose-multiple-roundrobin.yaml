@@ -26,7 +26,7 @@ services:
     ports:
       - 15673:15672
     volumes:
-    - ./log/rabbit-2-2server:/var/log/rabbitmq
+    - ./log/rabbit-2-server:/var/log/rabbitmq
     privileged: true
 
   rabbit-3-server:
