@@ -9,8 +9,6 @@ services:
       - ERLANG_COOKIE=abcdefg
     ports:
       - 15672:15672
-    volumes:
-    - ./log/rabbit-1-server:/var/log/rabbitmq
     privileged: true
 
   rabbit-2-server:
@@ -25,8 +23,6 @@ services:
       - CLUSTER_WITH=rabbit-1-server
     ports:
       - 15673:15672
-    volumes:
-    - ./log/rabbit-2-server:/var/log/rabbitmq
     privileged: true
 
   rabbit-3-server:
@@ -41,8 +37,6 @@ services:
       - CLUSTER_WITH=rabbit-1-server
     ports:
       - 15674:15672
-    volumes:
-    - ./log/rabbit-3-server:/var/log/rabbitmq
     privileged: true
 
   haproxy-1-rabbitmq:
