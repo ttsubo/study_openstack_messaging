@@ -1,0 +1,10 @@
+Mar 26 04:23:58 haproxy-2-rabbitmq rsyslogd: [origin software="rsyslogd" swVersion="8.4.2" x-pid="13" x-info="http://www.rsyslog.com"] start
+Mar 26 04:23:58 haproxy-2-rabbitmq haproxy[18]: Proxy rabbitmq-cluster started.
+Mar 26 04:23:58 haproxy-1-rabbitmq rsyslogd: [origin software="rsyslogd" swVersion="8.4.2" x-pid="13" x-info="http://www.rsyslog.com"] start
+Mar 26 04:23:58 haproxy-1-rabbitmq haproxy[18]: Proxy rabbitmq-cluster started.
+Mar 26 04:24:02 haproxy-2-rabbitmq haproxy[18]: Server rabbitmq-cluster/rabbitmq1 is UP, reason: Layer4 check passed, check duration: 0ms. 1 active and 0 backup servers online. 0 sessions requeued, 0 total in queue.
+Mar 26 04:24:02 haproxy-1-rabbitmq haproxy[18]: Server rabbitmq-cluster/rabbitmq1 is UP, reason: Layer4 check passed, check duration: 0ms. 1 active and 0 backup servers online. 0 sessions requeued, 0 total in queue.
+Mar 26 04:24:10 haproxy-2-rabbitmq haproxy[18]: Server rabbitmq-cluster/rabbitmq2 is UP, reason: Layer4 check passed, check duration: 0ms. 2 active and 0 backup servers online. 0 sessions requeued, 0 total in queue.
+Mar 26 04:24:10 haproxy-1-rabbitmq haproxy[18]: Server rabbitmq-cluster/rabbitmq2 is UP, reason: Layer4 check passed, check duration: 0ms. 2 active and 0 backup servers online. 0 sessions requeued, 0 total in queue.
+Mar 26 04:24:15 haproxy-2-rabbitmq haproxy[18]: Server rabbitmq-cluster/rabbitmq3 is UP, reason: Layer4 check passed, check duration: 0ms. 3 active and 0 backup servers online. 0 sessions requeued, 0 total in queue.
+Mar 26 04:24:15 haproxy-1-rabbitmq haproxy[18]: Server rabbitmq-cluster/rabbitmq3 is UP, reason: Layer4 check passed, check duration: 0ms. 3 active and 0 backup servers online. 0 sessions requeued, 0 total in queue.

@@ -1,0 +1,2 @@
+Mar 26 04:23:58 haproxy-2-rabbitmq rsyslogd: imklog: cannot open kernel log(/proc/kmsg): Operation not permitted.
+Mar 26 04:23:58 haproxy-1-rabbitmq rsyslogd: imklog: cannot open kernel log(/proc/kmsg): Operation not permitted.
