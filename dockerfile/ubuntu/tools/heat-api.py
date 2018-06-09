@@ -8,7 +8,6 @@ CONF = cfg.CONF
 CONF(default_config_files=['conf/heat-1.conf'])
 
 
-
 oslo.messaging.set_transport_defaults('heat')
 TRANSPORT = oslo.messaging.get_transport(CONF)
 ENGINE_TOPIC = 'engine'
@@ -42,9 +41,9 @@ class EngineClient(object):
 
     def health_check(self, ctxt, seqid, host, content):
         return self.call(ctxt, self.make_msg('health_check',
-                                              seqid=seqid,
-                                              host=host,
-                                              req=content))
+                                             seqid=seqid,
+                                             host=host,
+                                             req=content))
 
 
 class StackController(object):
@@ -53,9 +52,10 @@ class StackController(object):
         self.rpc_client = EngineClient()
 
     def health_check(self, seqid, host, content):
-        (id, hostname, response) = self.rpc_client.health_check({}, seqid, host, content)
+        (id, hostname, response) = self.rpc_client.health_check(
+            {}, seqid, host, content)
         logging.info("### Response: id=[{0}], host=[{1}], content=[{2}]"
-                    .format(id, hostname, response))
+                     .format(id, hostname, response))
 
 
 if __name__ == '__main__':
