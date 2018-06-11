@@ -39,13 +39,11 @@ class EngineService(object):
 
     def health_check(self, ctx, seqid, host, req):
         logging.info("### Request: id=[{0}], host=[{1}], content=[{2}]"
-                    .format(seqid, host, req))
+                     .format(seqid, host, req))
         myhost = os.uname()[1]
         response = "I'm fine!"
         time.sleep(30)
         return seqid, myhost, response
-
-
 
 
 if __name__ == '__main__':
