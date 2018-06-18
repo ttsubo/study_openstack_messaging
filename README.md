@@ -17,38 +17,55 @@ $ docker-compose -f docker-compose-multiple-roundrobin.yaml up -d
 ```
 ## Checking master/slave nodes in rabbitmq
 ```
-$ docker exec -it rabbit-1-server bash
-```
-```
-root@rabbit-1-server:/# curl localhost:15672/cli/rabbitmqadmin > rabbitmqadmin
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-100 36110  100 36110    0     0  11.2M      0 --:--:-- --:--:-- --:--:-- 17.2M
-
-root@rabbit-1-server:/# chmod 755 rabbitmqadmin
-
 root@rabbit-1-server:/# ./rabbitmqadmin list queues name messages node slave_nodes
 +------------------------------------------------+----------+------------------------+-----------------------------------------------+
 |                      name                      | messages |          node          |                  slave_nodes                  |
 +------------------------------------------------+----------+------------------------+-----------------------------------------------+
 | engine                                         | 0        | rabbit@rabbit-1-server | rabbit@rabbit-3-server rabbit@rabbit-2-server |
 | engine.heat-engine                             | 0        | rabbit@rabbit-1-server | rabbit@rabbit-3-server rabbit@rabbit-2-server |
-| engine_fanout_2b2414c23f814e77a5e5a7961d48a63e | 0        | rabbit@rabbit-1-server | rabbit@rabbit-3-server rabbit@rabbit-2-server |
-| engine_fanout_712588666789458596a8dc2ece2df0ec | 0        | rabbit@rabbit-1-server | rabbit@rabbit-3-server rabbit@rabbit-2-server |
-| engine_fanout_c044236f81be4b77bb401ca7941a13b2 | 0        | rabbit@rabbit-2-server | rabbit@rabbit-3-server rabbit@rabbit-1-server |
-| reply_80682df99e7d4fbe849da1131d01bca7         | 0        | rabbit@rabbit-3-server | rabbit@rabbit-1-server rabbit@rabbit-2-server |
+| engine_fanout_d3dbc757d8c8491daf905fa3ae0edea3 | 0        | rabbit@rabbit-1-server | rabbit@rabbit-3-server rabbit@rabbit-2-server |
+| reply_114ce15e745c40a49d09aa9d95b52faa         | 0        | rabbit@rabbit-1-server | rabbit@rabbit-3-server rabbit@rabbit-2-server |
 +------------------------------------------------+----------+------------------------+-----------------------------------------------+
+```
+## Checking status of cluster among rabbitmq nodes
+```
+root@rabbit-1-server:/# rabbitmqctl cluster_status
+Cluster status of node 'rabbit@rabbit-1-server' ...
+[{nodes,[{disc,['rabbit@rabbit-1-server','rabbit@rabbit-2-server',
+                'rabbit@rabbit-3-server']}]},
+ {running_nodes,['rabbit@rabbit-3-server','rabbit@rabbit-2-server',
+                 'rabbit@rabbit-1-server']},
+ {partitions,[]}]
+...done.
 ```
 ## Checking current list_queues in rabbitmq
 ```
 root@rabbit-1-server:/# rabbitmqctl list_queues name messages messages_unacknowledged consumers auto_delete
 Listing queues ...
-engine	0	0	3	false
-engine.heat-engine	0	0	3	false
-engine_fanout_2b2414c23f814e77a5e5a7961d48a63e	0	0	1	true
-engine_fanout_712588666789458596a8dc2ece2df0ec	0	0	1	true
-engine_fanout_c044236f81be4b77bb401ca7941a13b2	0	0	1	true
-reply_80682df99e7d4fbe849da1131d01bca7	0	0	1	true
+engine  0       0       1       false
+engine.heat-engine      0       0       1       false
+engine_fanout_d3dbc757d8c8491daf905fa3ae0edea3  0       0       1       true
+reply_114ce15e745c40a49d09aa9d95b52faa  0       0       1       true
+...done.
+```
+## Checking current queue policies in list_queues
+```
+root@rabbit-1-server:/# rabbitmqctl list_queues name policy pid slave_pids
+Listing queues ...
+engine  all     <'rabbit@rabbit-1-server'.2.671.0>      [<'rabbit@rabbit-3-server'.3.878.0>, <'rabbit@rabbit-2-server'.1.1015.0>]
+engine.heat-engine      all     <'rabbit@rabbit-1-server'.2.674.0>      [<'rabbit@rabbit-3-server'.3.876.0>, <'rabbit@rabbit-2-server'.1.1013.0>]
+engine_fanout_d3dbc757d8c8491daf905fa3ae0edea3  all     <'rabbit@rabbit-1-server'.2.677.0>      [<'rabbit@rabbit-3-server'.3.883.0>, <'rabbit@rabbit-2-server'.1.1021.0>]
+reply_114ce15e745c40a49d09aa9d95b52faa  all     <'rabbit@rabbit-1-server'.2.718.0>      [<'rabbit@rabbit-3-server'.3.899.0>, <'rabbit@rabbit-2-server'.1.1048.0>]
+...done.
+```
+## Checking whether mirrored queues are synchronised, or not in list_queues
+```
+root@rabbit-1-server:/# rabbitmqctl list_queues name slave_pids synchronised_slave_pids
+Listing queues ...
+engine  [<'rabbit@rabbit-3-server'.3.878.0>, <'rabbit@rabbit-2-server'.1.1015.0>]       [<'rabbit@rabbit-3-server'.3.878.0>, <'rabbit@rabbit-2-server'.1.1015.0>]
+engine.heat-engine      [<'rabbit@rabbit-3-server'.3.876.0>, <'rabbit@rabbit-2-server'.1.1013.0>]       [<'rabbit@rabbit-3-server'.3.876.0>, <'rabbit@rabbit-2-server'.1.1013.0>]
+engine_fanout_d3dbc757d8c8491daf905fa3ae0edea3  [<'rabbit@rabbit-3-server'.3.883.0>, <'rabbit@rabbit-2-server'.1.1021.0>]       [<'rabbit@rabbit-3-server'.3.883.0>, <'rabbit@rabbit-2-server'.1.1021.0>]
+reply_114ce15e745c40a49d09aa9d95b52faa  [<'rabbit@rabbit-3-server'.3.899.0>, <'rabbit@rabbit-2-server'.1.1048.0>]       [<'rabbit@rabbit-3-server'.3.899.0>, <'rabbit@rabbit-2-server'.1.1048.0>]
 ...done.
 ```
 ## Checking heat-api/heat-engine results via rabbitmq
