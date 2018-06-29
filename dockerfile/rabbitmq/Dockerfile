@@ -19,6 +19,7 @@ COPY start-rabbitmq.sh /usr/local/bin/
 COPY pre-entrypoint.sh /
 COPY docker-entrypoint.sh /
 COPY rabbitmq.config /etc/rabbitmq/
+COPY rabbitmqadmin /
 
 ENV GOSU_VERSION 1.10
 RUN set -eux; \

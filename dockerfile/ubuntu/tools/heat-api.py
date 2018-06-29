@@ -71,4 +71,4 @@ if __name__ == '__main__':
     while True:
         sequence_id += 1
         client.health_check(sequence_id, myhost, "How are you?")
-        time.sleep(1)
+        time.sleep(10)
