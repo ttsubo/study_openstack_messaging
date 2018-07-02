@@ -1,9 +1,9 @@
 ## Docker Image Build
 
 ```
-$ docker build -t ttsubo/ubuntu:mitaka dockerfile/ubuntu/.
-$ docker build -t ttsubo/rabbitmq:mitaka dockerfile/rabbitmq/.
-$ docker build -t ttsubo/haproxy:mitaka dockerfile/haproxy/.
+$ docker build -t ttsubo/ubuntu:upgrade-juno dockerfile/ubuntu/.
+$ docker build -t ttsubo/rabbitmq:upgrade-juno dockerfile/rabbitmq/.
+$ docker build -t ttsubo/haproxy:upgrade-juno dockerfile/haproxy/.
 ```
 
 ## Run

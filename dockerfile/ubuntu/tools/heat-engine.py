@@ -22,7 +22,7 @@ def get_rpc_server(target, endpoint):
 
 class EngineService(object):
 
-    RPC_API_VERSION = '1.26'
+    RPC_API_VERSION = '1.1'
 
     def __init__(self, host, topic):
         self.host = host
