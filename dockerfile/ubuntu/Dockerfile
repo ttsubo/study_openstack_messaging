@@ -14,7 +14,9 @@ ADD https://bootstrap.pypa.io/get-pip.py /
 RUN python get-pip.py
 
 # Install oslo_messaging
-RUN pip install oslo_messaging==4.6.1
+#RUN pip install oslo_messaging==4.6.1
+RUN pip install oslo_messaging==5.3.0
+RUN pip install --upgrade celery
 
 # Install eventlet
 RUN pip install eventlet==0.18.4
