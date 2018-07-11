@@ -10,6 +10,7 @@ RUN echo "deb http://www.rabbitmq.com/debian/ testing main" > /etc/apt/sources.l
  && apt-get update \
  && apt-get install -y rabbitmq-server=3.2.4-1 --force-yes \
  && apt-get install -y python \
+ && apt-get install -y iptables \
  && apt-get install -y curl
 
 # Setup RabbitMQ Web Management Console
