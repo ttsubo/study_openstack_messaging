@@ -2,6 +2,7 @@ FROM rabbitmq:3.6.5-management
 MAINTAINER Toshiki Tsuboi <t.tsubo2000@gmail.com>
 
 RUN apt-get update \
+ && apt-get install -y iptables \
  && apt-get install -y python curl
 
 COPY start-rabbitmq.sh /usr/local/bin/

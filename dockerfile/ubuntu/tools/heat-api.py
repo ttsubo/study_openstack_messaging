@@ -57,7 +57,7 @@ class StackController(object):
             (id, hostname, response) = self.rpc_client.health_check({}, seqid, host, content)
             logging.info("### Response: id=[{0}], host=[{1}], content=[{2}]"
                         .format(id, hostname, response))
-        except oslo.messaging.MessagingTimeout as e:
+        except oslo_messaging.MessagingTimeout as e:
             logging.error("### {0}".format(e))
 
 
