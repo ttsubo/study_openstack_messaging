@@ -9,6 +9,7 @@ services:
       - ERLANG_COOKIE=abcdefg
     ports:
       - 15672:15672
+    privileged: true
 
   rabbit-2-server:
     image: ttsubo/rabbitmq:mitaka
@@ -22,6 +23,7 @@ services:
       - CLUSTER_WITH=rabbit-1-server
     ports:
       - 15673:15672
+    privileged: true
 
   rabbit-3-server:
     image: ttsubo/rabbitmq:mitaka
@@ -35,6 +37,7 @@ services:
       - CLUSTER_WITH=rabbit-1-server
     ports:
       - 15674:15672
+    privileged: true
 
   haproxy-rabbitmq:
     image: ttsubo/haproxy:mitaka
@@ -57,6 +60,7 @@ services:
     - ./log:/log
     container_name: heat-1-engine
     hostname: heat-1-engine
+    privileged: true
 
   heat-2-engine:
     image: ttsubo/ubuntu:mitaka
@@ -65,6 +69,7 @@ services:
     - ./log:/log
     container_name: heat-2-engine
     hostname: heat-2-engine
+    privileged: true
 
   heat-3-engine:
     image: ttsubo/ubuntu:mitaka
@@ -73,6 +78,7 @@ services:
     - ./log:/log
     container_name: heat-3-engine
     hostname: heat-3-engine
+    privileged: true
 
   heat-1-api:
     image: ttsubo/ubuntu:mitaka
@@ -81,4 +87,5 @@ services:
     - ./log:/log
     container_name: heat-1-api
     hostname: heat-1-api
+    privileged: true
 

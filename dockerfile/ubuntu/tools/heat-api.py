@@ -53,9 +53,13 @@ class StackController(object):
         self.rpc_client = EngineClient()
 
     def health_check(self, seqid, host, content):
-        (id, hostname, response) = self.rpc_client.health_check({}, seqid, host, content)
-        logging.info("### Response: id=[{0}], host=[{1}], content=[{2}]"
-                    .format(id, hostname, response))
+        try:
+            (id, hostname, response) = self.rpc_client.health_check(
+                {}, seqid, host, content)
+            logging.info("### Response: id=[{0}], host=[{1}], content=[{2}]"
+                         .format(id, hostname, response))
+        except oslo_messaging.MessagingTimeout as e:
+            logging.error("### {0}".format(e))
 
 
 if __name__ == '__main__':
@@ -68,4 +72,4 @@ if __name__ == '__main__':
     while True:
         sequence_id += 1
         client.health_check(sequence_id, myhost, "How are you?")
-        time.sleep(1)
+        time.sleep(10)
