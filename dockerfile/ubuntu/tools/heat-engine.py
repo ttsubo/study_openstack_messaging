@@ -41,17 +41,15 @@ class EngineService(object):
 
     def health_check(self, ctx, seqid, host, req):
         logging.info("### Request: id=[{0}], host=[{1}], content=[{2}]"
-                    .format(seqid, host, req))
+                     .format(seqid, host, req))
         myhost = os.uname()[1]
         response = "I'm fine!"
         return seqid, myhost, response
 
 
-
-
 if __name__ == '__main__':
-    logging.basicConfig(format='%(asctime)s:%(levelname)s:%(message)s',
-                        level=logging.INFO)
+    logging.basicConfig(format='%(asctime)s:%(levelname)s:%(filename)s:%(lineno)s:%(funcName)s:%(message)s',
+                        level=logging.DEBUG)
 
     srv = EngineService("heat-engine", ENGINE_TOPIC)
     server = srv.start()

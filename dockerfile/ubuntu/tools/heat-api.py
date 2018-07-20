@@ -8,7 +8,6 @@ CONF = cfg.CONF
 CONF(default_config_files=['conf/heat.conf'])
 
 
-
 oslo_messaging.set_transport_defaults('heat')
 TRANSPORT = oslo_messaging.get_transport(CONF)
 ENGINE_TOPIC = 'engine'
@@ -47,9 +46,9 @@ class EngineClient(object):
 
     def health_check(self, ctxt, seqid, host, content):
         return self.call(ctxt, self.make_msg('health_check',
-                                              seqid=seqid,
-                                              host=host,
-                                              req=content))
+                                             seqid=seqid,
+                                             host=host,
+                                             req=content))
 
 
 class StackController(object):
@@ -58,14 +57,18 @@ class StackController(object):
         self.rpc_client = EngineClient()
 
     def health_check(self, seqid, host, content):
-        (id, hostname, response) = self.rpc_client.health_check({}, seqid, host, content)
-        logging.info("### Response: id=[{0}], host=[{1}], content=[{2}]"
-                    .format(id, hostname, response))
+        try:
+            (id, hostname, response) = self.rpc_client.health_check(
+                {}, seqid, host, content)
+            logging.info("### Response: id=[{0}], host=[{1}], content=[{2}]"
+                         .format(id, hostname, response))
+        except oslo_messaging.MessagingTimeout as e:
+            logging.error("### {0}".format(e))
 
 
 if __name__ == '__main__':
-    logging.basicConfig(format='%(asctime)s:%(levelname)s:%(message)s',
-                        level=logging.INFO)
+    logging.basicConfig(format='%(asctime)s:%(levelname)s:%(filename)s:%(lineno)s:%(funcName)s:%(message)s',
+                        level=logging.DEBUG)
 
     sequence_id = 0
     myhost = os.uname()[1]
@@ -73,4 +76,4 @@ if __name__ == '__main__':
     while True:
         sequence_id += 1
         client.health_check(sequence_id, myhost, "How are you?")
-        time.sleep(1)
+        time.sleep(10)

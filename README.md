@@ -1,9 +1,9 @@
 ## Docker Image Build
 
 ```
-$ docker build -t ttsubo/ubuntu:latest dockerfile/ubuntu/.
-$ docker build -t ttsubo/rabbitmq:latest dockerfile/rabbitmq/.
-$ docker build -t ttsubo/haproxy:latest dockerfile/haproxy/.
+$ docker build -t ttsubo/ubuntu:pike dockerfile/ubuntu/.
+$ docker build -t ttsubo/rabbitmq:pike dockerfile/rabbitmq/.
+$ docker build -t ttsubo/haproxy:pike dockerfile/haproxy/.
 ```
 
 ## Run
