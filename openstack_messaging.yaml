@@ -1,0 +1,108 @@
+########################################################################################
+# rabbitmq services
+########################################################################################
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: rabbit-1-server
+  name: rabbit-1-server
+spec:
+  ports:
+  - name: port5672
+    port: 5672
+  selector:
+    name: rabbit-1-server-pod
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbit-1-server-pod
+  labels:
+    name: rabbit-1-server-pod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: rabbit-1-server-pod
+  template:
+    metadata:
+      labels:
+        name: rabbit-1-server-pod
+    spec:
+      containers:
+      - name: rabbit-1-server-pod
+        image: ttsubo/rabbitmq:juno
+        ports:
+        - containerPort: 5672
+        securityContext:
+          privileged: true
+        command: ["/bin/sh"]
+        args: ["-c", "/usr/local/bin/start-rabbitmq.sh"]
+---
+########################################################################################
+# heat-engine services
+########################################################################################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: heat-engine-pod
+  labels:
+    name: heat-engine-pod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: heat-engine-pod
+  template:
+    metadata:
+      labels:
+        name: heat-engine-pod
+    spec:
+      volumes:
+      - name: log-1-dir
+        emptyDir: {}
+      containers:
+      - name: heat-engine-pod
+        image: ttsubo/ubuntu:juno
+        volumeMounts:
+        - name: log-1-dir
+          mountPath: /log
+        securityContext:
+          privileged: true
+        command: ["/bin/sh"]
+        args: ["-c", "sleep 15; python heat-engine.py --config-file conf/heat1.conf > /log/heat-1-engine.log 2>& 1"]
+---
+########################################################################################
+# heat-api services
+########################################################################################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: heat-api-pod
+  labels:
+    name: heat-api-pod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: heat-api-pod
+  template:
+    metadata:
+      labels:
+        name: heat-api-pod
+    spec:
+      volumes:
+      - name: log-2-dir
+        emptyDir: {}
+      containers:
+      - name: heat-api-pod
+        image: ttsubo/ubuntu:juno
+        volumeMounts:
+        - name: log-2-dir
+          mountPath: /log
+        securityContext:
+          privileged: true
+        command: ["/bin/sh"]
+        args: ["-c", "sleep 30; python heat-api.py --config-file conf/heat1.conf > /log/heat-1-api.log 2>& 1"]
+---
