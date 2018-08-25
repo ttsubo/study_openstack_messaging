@@ -4,6 +4,9 @@ MAINTAINER Toshiki Tsuboi <t.tsubo2000@gmail.com>
 
 RUN apt-get update \
  && apt-get install -y git python-dev \
+ && apt-get install -y iptables \
+ && apt-get install -y lsof \
+ && apt-get install -y dnsutils \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
