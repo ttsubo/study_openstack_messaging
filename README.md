@@ -1,67 +1,71 @@
-## Envirornment
-* RabbitMQ : 3.2.4
-* oslo.messaging: 1.4.2
+# study_openstack_messaging
 
-## How to build Docker Image
+## Docker Image Build
 
 ```
-$ docker build -t ttsubo/ubuntu:juno dockerfile/ubuntu/.
-$ docker build -t ttsubo/rabbitmq:juno dockerfile/rabbitmq/.
-$ docker build -t ttsubo/haproxy:juno dockerfile/haproxy/.
+$ docker build -t ttsubo/ubuntu:juno docker/build/ubuntu/.
+$ docker build -t ttsubo/rabbitmq:3.2.4 docker/build/rabbitmq/.
 ```
 
-## How to Run
+## Run on kubernetes(minikube)
+Applying openstack_messaging.yaml
 ```
-$ docker-compose -f docker-compose-single.yaml up -d
+$ kubectl apply -f <(istioctl kube-inject -f kubernetes/openstack_messaging.yaml)
+service "rabbit-1-server" created
+deployment "rabbit-1-server-pod" created
+deployment "heat-engine-pod" created
+deployment "heat-api-pod" created
 ```
-or
+Applying gateway.yaml
 ```
-$ docker-compose -f docker-compose-multiple.yaml up -d
+$ kubectl apply -f kubernetes/gateway.yaml 
+gateway "openstack-messaging-gateway" created
+virtualservice "openstack-messaging" created
 ```
-or
+Checking status of pods
 ```
-$ docker-compose -f docker-compose-multiple-roundrobin.yaml up -d
+$ kubectl get pods
+NAME                                   READY     STATUS    RESTARTS   AGE
+heat-api-pod-7ff755f585-wbm28          2/2       Running   0          53s
+heat-engine-pod-7b9ffb4886-jk8kw       2/2       Running   0          53s
+rabbit-1-server-pod-6d74b54494-w76vs   2/2       Running   1          53s
 ```
-## Checking master/slave nodes in rabbitmq
+Checking status of services
 ```
-$ docker exec -it rabbit-1-server bash
+$ kubectl get services
+NAME              TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)              AGE
+kubernetes        ClusterIP   10.96.0.1        <none>        443/TCP              15d
+rabbit-1-server   ClusterIP   10.100.144.186   <none>        5672/TCP,15672/TCP   1m
+```
+Checking webui address/port
+```
+$ export INGRESS_HOST=$(minikube ip)
+$ export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
+$ export GATEWAY_URL=$INGRESS_HOST:$INGRESS_PORT
+$ curl -o /dev/null -s -w "%{http_code}\n" http://${GATEWAY_URL}/
+200
+$ open http://${GATEWAY_URL}/
+```
+Checking result
+```
+$ kubectl exec -it heat-api-pod-7ff755f585-wbm28 -c heat-api-pod tail /log/heat-1-api.log
+2018-09-09 07:21:36,572:INFO:### Response: id=[444], host=[heat-engine-pod-7b9ffb4886-jk8kw], content=[I'm fine!]
+2018-09-09 07:21:37,580:INFO:### Response: id=[445], host=[heat-engine-pod-7b9ffb4886-jk8kw], content=[I'm fine!]
+2018-09-09 07:21:38,589:INFO:### Response: id=[446], host=[heat-engine-pod-7b9ffb4886-jk8kw], content=[I'm fine!]
+2018-09-09 07:21:39,612:INFO:### Response: id=[447], host=[heat-engine-pod-7b9ffb4886-jk8kw], content=[I'm fine!]
+2018-09-09 07:21:40,635:INFO:### Response: id=[448], host=[heat-engine-pod-7b9ffb4886-jk8kw], content=[I'm fine!]
 ```
 ```
-root@rabbit-1-server:/# curl localhost:15672/cli/rabbitmqadmin > rabbitmqadmin
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-100 36110  100 36110    0     0  11.2M      0 --:--:-- --:--:-- --:--:-- 17.2M
-
-root@rabbit-1-server:/# chmod 755 rabbitmqadmin
-
-root@rabbit-1-server:/# ./rabbitmqadmin list queues name messages node slave_nodes
-+------------------------------------------------+----------+------------------------+-----------------------------------------------+
-|                      name                      | messages |          node          |                  slave_nodes                  |
-+------------------------------------------------+----------+------------------------+-----------------------------------------------+
-| engine                                         | 0        | rabbit@rabbit-1-server | rabbit@rabbit-3-server rabbit@rabbit-2-server |
-| engine.heat-engine                             | 0        | rabbit@rabbit-1-server | rabbit@rabbit-3-server rabbit@rabbit-2-server |
-| engine_fanout_2b2414c23f814e77a5e5a7961d48a63e | 0        | rabbit@rabbit-1-server | rabbit@rabbit-3-server rabbit@rabbit-2-server |
-| engine_fanout_712588666789458596a8dc2ece2df0ec | 0        | rabbit@rabbit-1-server | rabbit@rabbit-3-server rabbit@rabbit-2-server |
-| engine_fanout_c044236f81be4b77bb401ca7941a13b2 | 0        | rabbit@rabbit-2-server | rabbit@rabbit-3-server rabbit@rabbit-1-server |
-| reply_80682df99e7d4fbe849da1131d01bca7         | 0        | rabbit@rabbit-3-server | rabbit@rabbit-1-server rabbit@rabbit-2-server |
-+------------------------------------------------+----------+------------------------+-----------------------------------------------+
+$ kubectl exec -it heat-engine-pod-7b9ffb4886-jk8kw -c heat-engine-pod tail /log/heat-1-engine.log
+2018-09-09 07:21:40,631:INFO:### Request: id=[448], host=[heat-api-pod-7ff755f585-wbm28], content=[How are you?]
+2018-09-09 07:21:41,639:INFO:### Request: id=[449], host=[heat-api-pod-7ff755f585-wbm28], content=[How are you?]
+2018-09-09 07:21:42,660:INFO:### Request: id=[450], host=[heat-api-pod-7ff755f585-wbm28], content=[How are you?]
+2018-09-09 07:21:43,667:INFO:### Request: id=[451], host=[heat-api-pod-7ff755f585-wbm28], content=[How are you?]
+2018-09-09 07:21:44,675:INFO:### Request: id=[452], host=[heat-api-pod-7ff755f585-wbm28], content=[How are you?]
 ```
-## Checking current list_queues in rabbitmq
+Delete all
 ```
-root@rabbit-1-server:/# rabbitmqctl list_queues name messages messages_unacknowledged consumers auto_delete
-Listing queues ...
-engine	0	0	3	false
-engine.heat-engine	0	0	3	false
-engine_fanout_2b2414c23f814e77a5e5a7961d48a63e	0	0	1	true
-engine_fanout_712588666789458596a8dc2ece2df0ec	0	0	1	true
-engine_fanout_c044236f81be4b77bb401ca7941a13b2	0	0	1	true
-reply_80682df99e7d4fbe849da1131d01bca7	0	0	1	true
-...done.
-```
-## Checking heat-api/heat-engine results via rabbitmq
-```
-$ tail -f log/heat-1-api.log
-$ tail -f log/heat-1-engine.log
-$ tail -f log/heat-2-engine.log
-$ tail -f log/heat-3-engine.log
+$ kubectl delete -f <(istioctl kube-inject -f kubernetes/openstack_messaging.yaml)
+$ kubectl delete gateway openstack-messaging-gateway
+$ kubectl delete virtualservice openstack-messaging
 ```

@@ -1,0 +1,422 @@
+########################################################################################
+# rabbitmq services
+########################################################################################
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: rabbit-1-server
+  name: rabbit-1-server
+spec:
+  ports:
+  - name: port5672
+    port: 5672
+  - name: port15672
+    port: 15672
+  selector:
+    name: rabbit-1-server-pod
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    name: rabbit-1-server-pod
+  name: rabbit-1-server-pod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: rabbit-1-server-pod
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/status: '{"version":"5a357b5fa6005e3d7642e92accb42383c4782e9865d5c5df193217a69bebcf46","initContainers":["istio-init"],"containers":["istio-proxy"],"volumes":["istio-envoy","istio-certs"],"imagePullSecrets":null}'
+      creationTimestamp: null
+      labels:
+        name: rabbit-1-server-pod
+    spec:
+      containers:
+      - args:
+        - -c
+        - /usr/local/bin/start-rabbitmq.sh
+        command:
+        - /bin/sh
+        image: ttsubo/rabbitmq:3.2.4
+        name: rabbit-1-server-pod
+        ports:
+        - containerPort: 5672
+        - containerPort: 15672
+        resources: {}
+        securityContext:
+          privileged: true
+      - args:
+        - proxy
+        - sidecar
+        - --configPath
+        - /etc/istio/proxy
+        - --binaryPath
+        - /usr/local/bin/envoy
+        - --serviceCluster
+        - istio-proxy
+        - --drainDuration
+        - 45s
+        - --parentShutdownDuration
+        - 1m0s
+        - --discoveryAddress
+        - istio-pilot.istio-system:15007
+        - --discoveryRefreshDelay
+        - 1s
+        - --zipkinAddress
+        - zipkin.istio-system:9411
+        - --connectTimeout
+        - 10s
+        - --statsdUdpAddress
+        - istio-statsd-prom-bridge.istio-system:9125
+        - --proxyAdminPort
+        - "15000"
+        - --controlPlaneAuthPolicy
+        - NONE
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: INSTANCE_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: ISTIO_META_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: ISTIO_META_INTERCEPTION_MODE
+          value: REDIRECT
+        image: gcr.io/istio-release/proxyv2:1.0.0
+        imagePullPolicy: IfNotPresent
+        name: istio-proxy
+        resources:
+          requests:
+            cpu: 10m
+        securityContext:
+          privileged: true
+          readOnlyRootFilesystem: true
+          runAsUser: 1337
+        volumeMounts:
+        - mountPath: /etc/istio/proxy
+          name: istio-envoy
+        - mountPath: /etc/certs/
+          name: istio-certs
+          readOnly: true
+      initContainers:
+      - args:
+        - -p
+        - "15001"
+        - -u
+        - "1337"
+        - -m
+        - REDIRECT
+        - -i
+        - '*'
+        - -x
+        - ""
+        - -b
+        - 5672, 15672,
+        - -d
+        - ""
+        image: gcr.io/istio-release/proxy_init:1.0.0
+        imagePullPolicy: IfNotPresent
+        name: istio-init
+        resources: {}
+        securityContext:
+          capabilities:
+            add:
+            - NET_ADMIN
+          privileged: true
+      volumes:
+      - emptyDir:
+          medium: Memory
+        name: istio-envoy
+      - name: istio-certs
+        secret:
+          optional: true
+          secretName: istio.default
+status: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    name: heat-engine-pod
+  name: heat-engine-pod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: heat-engine-pod
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/status: '{"version":"5a357b5fa6005e3d7642e92accb42383c4782e9865d5c5df193217a69bebcf46","initContainers":["istio-init"],"containers":["istio-proxy"],"volumes":["istio-envoy","istio-certs"],"imagePullSecrets":null}'
+      creationTimestamp: null
+      labels:
+        name: heat-engine-pod
+    spec:
+      containers:
+      - args:
+        - -c
+        - sleep 15; python heat-engine.py --config-file conf/heat1.conf > /log/heat-1-engine.log
+          2>& 1
+        command:
+        - /bin/sh
+        image: ttsubo/ubuntu:juno
+        imagePullPolicy: Always
+        name: heat-engine-pod
+        resources: {}
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /log
+          name: log-1-dir
+      - args:
+        - proxy
+        - sidecar
+        - --configPath
+        - /etc/istio/proxy
+        - --binaryPath
+        - /usr/local/bin/envoy
+        - --serviceCluster
+        - istio-proxy
+        - --drainDuration
+        - 45s
+        - --parentShutdownDuration
+        - 1m0s
+        - --discoveryAddress
+        - istio-pilot.istio-system:15007
+        - --discoveryRefreshDelay
+        - 1s
+        - --zipkinAddress
+        - zipkin.istio-system:9411
+        - --connectTimeout
+        - 10s
+        - --statsdUdpAddress
+        - istio-statsd-prom-bridge.istio-system:9125
+        - --proxyAdminPort
+        - "15000"
+        - --controlPlaneAuthPolicy
+        - NONE
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: INSTANCE_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: ISTIO_META_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: ISTIO_META_INTERCEPTION_MODE
+          value: REDIRECT
+        image: gcr.io/istio-release/proxyv2:1.0.0
+        imagePullPolicy: IfNotPresent
+        name: istio-proxy
+        resources:
+          requests:
+            cpu: 10m
+        securityContext:
+          privileged: true
+          readOnlyRootFilesystem: true
+          runAsUser: 1337
+        volumeMounts:
+        - mountPath: /etc/istio/proxy
+          name: istio-envoy
+        - mountPath: /etc/certs/
+          name: istio-certs
+          readOnly: true
+      initContainers:
+      - args:
+        - -p
+        - "15001"
+        - -u
+        - "1337"
+        - -m
+        - REDIRECT
+        - -i
+        - '*'
+        - -x
+        - ""
+        - -b
+        - ""
+        - -d
+        - ""
+        image: gcr.io/istio-release/proxy_init:1.0.0
+        imagePullPolicy: IfNotPresent
+        name: istio-init
+        resources: {}
+        securityContext:
+          capabilities:
+            add:
+            - NET_ADMIN
+          privileged: true
+      volumes:
+      - emptyDir: {}
+        name: log-1-dir
+      - emptyDir:
+          medium: Memory
+        name: istio-envoy
+      - name: istio-certs
+        secret:
+          optional: true
+          secretName: istio.default
+status: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    name: heat-api-pod
+  name: heat-api-pod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: heat-api-pod
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/status: '{"version":"5a357b5fa6005e3d7642e92accb42383c4782e9865d5c5df193217a69bebcf46","initContainers":["istio-init"],"containers":["istio-proxy"],"volumes":["istio-envoy","istio-certs"],"imagePullSecrets":null}'
+      creationTimestamp: null
+      labels:
+        name: heat-api-pod
+    spec:
+      containers:
+      - args:
+        - -c
+        - sleep 30; python heat-api.py --config-file conf/heat1.conf > /log/heat-1-api.log
+          2>& 1
+        command:
+        - /bin/sh
+        image: ttsubo/ubuntu:juno
+        imagePullPolicy: Always
+        name: heat-api-pod
+        resources: {}
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /log
+          name: log-2-dir
+      - args:
+        - proxy
+        - sidecar
+        - --configPath
+        - /etc/istio/proxy
+        - --binaryPath
+        - /usr/local/bin/envoy
+        - --serviceCluster
+        - istio-proxy
+        - --drainDuration
+        - 45s
+        - --parentShutdownDuration
+        - 1m0s
+        - --discoveryAddress
+        - istio-pilot.istio-system:15007
+        - --discoveryRefreshDelay
+        - 1s
+        - --zipkinAddress
+        - zipkin.istio-system:9411
+        - --connectTimeout
+        - 10s
+        - --statsdUdpAddress
+        - istio-statsd-prom-bridge.istio-system:9125
+        - --proxyAdminPort
+        - "15000"
+        - --controlPlaneAuthPolicy
+        - NONE
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: INSTANCE_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: ISTIO_META_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: ISTIO_META_INTERCEPTION_MODE
+          value: REDIRECT
+        image: gcr.io/istio-release/proxyv2:1.0.0
+        imagePullPolicy: IfNotPresent
+        name: istio-proxy
+        resources:
+          requests:
+            cpu: 10m
+        securityContext:
+          privileged: true
+          readOnlyRootFilesystem: true
+          runAsUser: 1337
+        volumeMounts:
+        - mountPath: /etc/istio/proxy
+          name: istio-envoy
+        - mountPath: /etc/certs/
+          name: istio-certs
+          readOnly: true
+      initContainers:
+      - args:
+        - -p
+        - "15001"
+        - -u
+        - "1337"
+        - -m
+        - REDIRECT
+        - -i
+        - '*'
+        - -x
+        - ""
+        - -b
+        - ""
+        - -d
+        - ""
+        image: gcr.io/istio-release/proxy_init:1.0.0
+        imagePullPolicy: IfNotPresent
+        name: istio-init
+        resources: {}
+        securityContext:
+          capabilities:
+            add:
+            - NET_ADMIN
+          privileged: true
+      volumes:
+      - emptyDir: {}
+        name: log-2-dir
+      - emptyDir:
+          medium: Memory
+        name: istio-envoy
+      - name: istio-certs
+        secret:
+          optional: true
+          secretName: istio.default
+status: {}
+---

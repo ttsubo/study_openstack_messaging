@@ -62,8 +62,8 @@ class StackController(object):
 
 
 if __name__ == '__main__':
-    logging.basicConfig(format='%(asctime)s:%(levelname)s:%(name)s:%(message)s',
-                        level=logging.DEBUG)
+    logging.basicConfig(format='%(asctime)s:%(levelname)s:%(message)s',
+                        level=logging.INFO)
 
     sequence_id = 0
     myhost = os.uname()[1]
@@ -71,4 +71,4 @@ if __name__ == '__main__':
     while True:
         sequence_id += 1
         client.health_check(sequence_id, myhost, "How are you?")
-        time.sleep(10)
+        time.sleep(1)

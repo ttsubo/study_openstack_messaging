@@ -11,6 +11,8 @@ spec:
   ports:
   - name: port5672
     port: 5672
+  - name: port15672
+    port: 15672
   selector:
     name: rabbit-1-server-pod
 ---
@@ -32,9 +34,11 @@ spec:
     spec:
       containers:
       - name: rabbit-1-server-pod
-        image: ttsubo/rabbitmq:juno
+        image: ttsubo/rabbitmq:3.2.4
+        imagePullPolicy: Always
         ports:
         - containerPort: 5672
+        - containerPort: 15672
         securityContext:
           privileged: true
         command: ["/bin/sh"]
@@ -65,6 +69,7 @@ spec:
       containers:
       - name: heat-engine-pod
         image: ttsubo/ubuntu:juno
+        imagePullPolicy: Always
         volumeMounts:
         - name: log-1-dir
           mountPath: /log
@@ -98,6 +103,7 @@ spec:
       containers:
       - name: heat-api-pod
         image: ttsubo/ubuntu:juno
+        imagePullPolicy: Always
         volumeMounts:
         - name: log-2-dir
           mountPath: /log

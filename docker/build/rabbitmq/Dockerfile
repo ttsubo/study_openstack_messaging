@@ -13,7 +13,8 @@ RUN echo "deb http://www.rabbitmq.com/debian/ testing main" > /etc/apt/sources.l
  && apt-get install -y iptables \
  && apt-get install -y lsof \
  && apt-get install -y dnsutils \
- && apt-get install -y curl
+ && apt-get install -y curl \
+ && apt-get install -y tcpdump
 
 # Setup RabbitMQ Web Management Console
 RUN rabbitmq-plugins enable rabbitmq_management

@@ -7,6 +7,8 @@ RUN apt-get update \
  && apt-get install -y iptables \
  && apt-get install -y lsof \
  && apt-get install -y dnsutils \
+ && apt-get install -y curl \
+ && apt-get install -y tcpdump \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 

@@ -47,8 +47,8 @@ class EngineService(object):
 
 
 if __name__ == '__main__':
-    logging.basicConfig(format='%(asctime)s:%(levelname)s:%(name)s:%(message)s',
-                        level=logging.DEBUG)
+    logging.basicConfig(format='%(asctime)s:%(levelname)s:%(message)s',
+                        level=logging.INFO)
 
     srv = EngineService("heat-engine", ENGINE_TOPIC)
     server = srv.start()
