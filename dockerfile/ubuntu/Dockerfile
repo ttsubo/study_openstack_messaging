@@ -12,7 +12,8 @@ RUN apt-get update \
 WORKDIR /
 ADD tools tools
 ADD https://bootstrap.pypa.io/get-pip.py /
-RUN python get-pip.py
+RUN python get-pip.py \
+ && pip install pip==9.0.3
 
 # Install oslo_messaging
 RUN pip install oslo_messaging==1.4.2

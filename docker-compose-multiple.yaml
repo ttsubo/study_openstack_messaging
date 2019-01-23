@@ -45,23 +45,9 @@ services:
 #    - ./log/rabbit-3-server:/var/log/rabbitmq
     privileged: true
 
-  haproxy-rabbitmq:
-    image: ttsubo/haproxy:juno
-    command: /bin/sh -c "service rsyslog start; haproxy -db -f /usr/local/etc/haproxy/haproxy.cfg"
-    depends_on:
-    - rabbit-1-server
-    - rabbit-2-server
-    - rabbit-3-server
-    ports:
-    - "5672:5672"
-    volumes:
-    - ./log/haproxy-rabbitmq:/var/log
-    container_name: haproxy-rabbitmq
-    hostname: haproxy-rabbitmq
-
   heat-1-engine:
     image: ttsubo/ubuntu:juno
-    command: /bin/sh -c "sleep 20; python heat-engine.py --config-file conf/heat-engine.conf > /log/heat-1-engine.log 2>& 1"
+    command: /bin/sh -c "sleep 20; python heat-engine.py --config-file conf/heat.conf > /log/heat-1-engine.log 2>& 1"
     volumes:
     - ./log:/log
     container_name: heat-1-engine
@@ -70,7 +56,7 @@ services:
 
   heat-2-engine:
     image: ttsubo/ubuntu:juno
-    command: /bin/sh -c "sleep 25; python heat-engine.py --config-file conf/heat-engine.conf > /log/heat-2-engine.log 2>& 1"
+    command: /bin/sh -c "sleep 25; python heat-engine.py --config-file conf/heat.conf > /log/heat-2-engine.log 2>& 1"
     volumes:
     - ./log:/log
     container_name: heat-2-engine
@@ -79,7 +65,7 @@ services:
 
   heat-3-engine:
     image: ttsubo/ubuntu:juno
-    command: /bin/sh -c "sleep 30; python heat-engine.py --config-file conf/heat-engine.conf > /log/heat-3-engine.log 2>& 1"
+    command: /bin/sh -c "sleep 30; python heat-engine.py --config-file conf/heat.conf > /log/heat-3-engine.log 2>& 1"
     volumes:
     - ./log:/log
     container_name: heat-3-engine

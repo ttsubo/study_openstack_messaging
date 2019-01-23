@@ -1,5 +1,5 @@
 ## Envirornment
-* RabbitMQ : 3.2.4
+* RabbitMQ : 3.6.15
 * oslo.messaging: 1.4.2
 
 ## How to build Docker Image
@@ -7,7 +7,6 @@
 ```
 $ docker build -t ttsubo/ubuntu:juno dockerfile/ubuntu/.
 $ docker build -t ttsubo/rabbitmq:juno dockerfile/rabbitmq/.
-$ docker build -t ttsubo/haproxy:juno dockerfile/haproxy/.
 ```
 
 ## How to Run
@@ -17,10 +16,6 @@ $ docker-compose -f docker-compose-single.yaml up -d
 or
 ```
 $ docker-compose -f docker-compose-multiple.yaml up -d
-```
-or
-```
-$ docker-compose -f docker-compose-multiple-roundrobin.yaml up -d
 ```
 ## Checking master/slave nodes in rabbitmq
 ```

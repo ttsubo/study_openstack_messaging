@@ -4,11 +4,18 @@ MAINTAINER Toshiki Tsuboi <t.tsubo2000@gmail.com>
 # setup erlang
 
 WORKDIR /
-ADD https://www.rabbitmq.com/rabbitmq-signing-key-public.asc .
-RUN apt-key add rabbitmq-signing-key-public.asc
-RUN echo "deb http://www.rabbitmq.com/debian/ testing main" > /etc/apt/sources.list.d/rabbitmq.list \
- && apt-get update \
- && apt-get install -y rabbitmq-server=3.2.4-1 --force-yes \
+RUN apt-get update \
+ && apt-get install -y wget \
+ && apt-get install -y apt-transport-https \
+ && wget -O- https://dl.bintray.com/rabbitmq/Keys/rabbitmq-release-signing-key.asc | sudo apt-key add - \
+ && wget -O- https://www.rabbitmq.com/rabbitmq-release-signing-key.asc | sudo apt-key add - \
+ && wget -O- https://packages.erlang-solutions.com/ubuntu/erlang_solutions.asc | sudo apt-key add - \
+ && echo "deb https://dl.bintray.com/rabbitmq/debian trusty main" > /etc/apt/sources.list.d/rabbitmq.list \
+ && echo "deb http://packages.erlang-solutions.com/ubuntu trusty contrib" > /etc/apt/sources.list.d/erlang.list
+
+RUN apt-get update \
+ && apt-get install -y esl-erlang=1:20.3.8.15-1 \
+ && apt-get install -y rabbitmq-server=3.6.15-1 \
  && apt-get install -y python \
  && apt-get install -y iptables \
  && apt-get install -y curl
@@ -21,6 +28,7 @@ COPY pre-entrypoint.sh /
 COPY docker-entrypoint.sh /
 COPY rabbitmq.config /etc/rabbitmq/
 COPY rabbitmqadmin /
+COPY get-rabbit.py /
 
 ENV GOSU_VERSION 1.10
 RUN set -eux; \
