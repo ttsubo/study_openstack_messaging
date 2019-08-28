@@ -34,7 +34,7 @@ spec:
     spec:
       containers:
       - name: rabbit-1-server-pod
-        image: ttsubo/rabbitmq:3.2.4
+        image: ttsubo/rabbitmq:3.6.15
         imagePullPolicy: Always
         ports:
         - containerPort: 5672

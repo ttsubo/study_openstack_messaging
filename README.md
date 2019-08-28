@@ -4,7 +4,7 @@
 
 ```
 $ docker build -t ttsubo/ubuntu:juno docker/build/ubuntu/.
-$ docker build -t ttsubo/rabbitmq:3.2.4 docker/build/rabbitmq/.
+$ docker build -t ttsubo/rabbitmq:3.6.15 docker/build/rabbitmq/.
 ```
 
 ## Run on kubernetes(minikube)

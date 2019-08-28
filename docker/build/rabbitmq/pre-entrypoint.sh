@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
 
+service ssh start
 mkdir -p /var/lib/rabbitmq
 
 if [ "$ERLANG_COOKIE" ]; then
